@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from 'react'
 import { lerp } from 'three/src/math/MathUtils'
 
-const TrailSvg = ({ NO_OF_POINTS = 30 }) => {
+const TrailSvg = ({ NO_OF_POINTS = 20 }) => {
    const pathRef = useRef(null);
    const circle1Ref = useRef(null);
    const circle2Ref = useRef(null);
@@ -15,6 +15,8 @@ const TrailSvg = ({ NO_OF_POINTS = 30 }) => {
 
 
    useEffect(() => {
+      let frameId;
+
       const tick = () => {
          let d = '';
 
@@ -44,13 +46,17 @@ const TrailSvg = ({ NO_OF_POINTS = 30 }) => {
          circle2Ref.current.setAttribute('cx', smoothMouse.current.x);
          circle2Ref.current.setAttribute('cy', smoothMouse.current.y);
 
-         requestAnimationFrame(tick)
+         frameId = requestAnimationFrame(tick)
       }
 
       tick();
+
+      return () => {
+         cancelAnimationFrame(frameId)
+      }
    }, [])
 
-   return (
+   return (     
       <svg className='fixed top-0 left-0 h-screen w-full'>
          <circle ref={circle1Ref} cx="160" cy="160" r="10" fill="none" stroke='white' />
          <circle ref={circle2Ref} filter="url(#filter_shadow_circle)" cx="160" cy="160" r="30" fill="none" stroke='white' strokeWidth={2} />
@@ -72,7 +78,7 @@ const TrailSvg = ({ NO_OF_POINTS = 30 }) => {
                <stop offset="1" stopColor="white" />
             </linearGradient>
 
-            <filter id="filter_shadow_circle" x="0" y="0" width="826" height="898" filterUnits="userSpaceOnUse" colorInterpolationFilters="sRGB">
+            <filter id="filter_shadow_circle" x="0" y="0" width={window.innerWidth} height={window.innerHeight} filterUnits="userSpaceOnUse" colorInterpolationFilters="sRGB">
                <feFlood floodOpacity="0" result="BackgroundImageFix" />
                <feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha" />
                <feMorphology radius="3" operator="dilate" in="SourceAlpha" result="effect1_dropShadow_1195_95" /> {/* radius */}
@@ -85,7 +91,7 @@ const TrailSvg = ({ NO_OF_POINTS = 30 }) => {
 
 
 
-            <filter id="filter0_d_1195_95" x="0" y="0" width="826" height="898" filterUnits="userSpaceOnUse" colorInterpolationFilters="sRGB">
+            <filter id="filter0_d_1195_95" x="0" y="0" width={window.innerWidth} height={window.innerHeight} filterUnits="userSpaceOnUse" colorInterpolationFilters="sRGB">
                <feFlood floodOpacity="0" result="BackgroundImageFix" />
                <feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha" />
                <feMorphology radius="15" operator="dilate" in="SourceAlpha" result="effect1_dropShadow_1195_95" />
