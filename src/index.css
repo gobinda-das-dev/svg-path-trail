@@ -1,0 +1,14 @@
+@import "tailwindcss";
+
+body,
+html {
+   background-color: #111;
+}
+
+#canvas {
+   height: 100vh;
+   width: 100%;
+   position: fixed;
+   top: 0;
+   left: 0;
+}
