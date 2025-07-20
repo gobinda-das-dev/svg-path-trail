@@ -1,13 +1,14 @@
-import React, { useEffect, useRef } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { lerp } from 'three/src/math/MathUtils'
 
-const TrailSvg = ({ NO_OF_POINTS = 20 }) => {
+const TrailSvg = ({ NO_OF_POINTS = 10 }) => {
    const pathRef = useRef(null);
    const circle1Ref = useRef(null);
    const circle2Ref = useRef(null);
    const gradientRef = useRef(null);
    const mouse = useMouse();
    const smoothMouse = useRef({ x: 0, y: 0 });
+   const [windowSize, setWindowSize] = useState({ width: 0, height: 0 });
 
    const position = useRef(
       Array.from({ length: NO_OF_POINTS }, () => [0, 0])
@@ -20,8 +21,8 @@ const TrailSvg = ({ NO_OF_POINTS = 20 }) => {
       const tick = () => {
          let d = '';
 
-         smoothMouse.current.x = lerp(smoothMouse.current.x, mouse.x, 0.1);
-         smoothMouse.current.y = lerp(smoothMouse.current.y, mouse.y, 0.1);
+         smoothMouse.current.x = lerp(smoothMouse.current.x, mouse.x, 0.15);
+         smoothMouse.current.y = lerp(smoothMouse.current.y, mouse.y, 0.15);
 
          for (let i = NO_OF_POINTS - 1; i > 0; i--) {
             position.current[i][0] = position.current[i - 1][0];
@@ -56,6 +57,19 @@ const TrailSvg = ({ NO_OF_POINTS = 20 }) => {
       }
    }, [])
 
+   useEffect(() => {
+      const handleResize = () => {
+         setWindowSize({ width: window.innerWidth, height: window.innerHeight })
+      }
+
+      handleResize();
+      window.addEventListener('resize', handleResize);
+
+      return () => {
+         window.removeEventListener('resize', handleResize);
+      }
+   }, [])
+
    return (     
       <svg className='fixed top-0 left-0 h-screen w-full'>
          <circle ref={circle1Ref} cx="160" cy="160" r="10" fill="none" stroke='white' />
@@ -78,7 +92,7 @@ const TrailSvg = ({ NO_OF_POINTS = 20 }) => {
                <stop offset="1" stopColor="white" />
             </linearGradient>
 
-            <filter id="filter_shadow_circle" x="0" y="0" width={window.innerWidth} height={window.innerHeight} filterUnits="userSpaceOnUse" colorInterpolationFilters="sRGB">
+            <filter id="filter_shadow_circle" x="0" y="0" width={windowSize.width} height={windowSize.height} filterUnits="userSpaceOnUse" colorInterpolationFilters="sRGB">
                <feFlood floodOpacity="0" result="BackgroundImageFix" />
                <feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha" />
                <feMorphology radius="3" operator="dilate" in="SourceAlpha" result="effect1_dropShadow_1195_95" /> {/* radius */}
@@ -91,7 +105,7 @@ const TrailSvg = ({ NO_OF_POINTS = 20 }) => {
 
 
 
-            <filter id="filter0_d_1195_95" x="0" y="0" width={window.innerWidth} height={window.innerHeight} filterUnits="userSpaceOnUse" colorInterpolationFilters="sRGB">
+            <filter id="filter0_d_1195_95" x="0" y="0" width={windowSize.width} height={windowSize.height} filterUnits="userSpaceOnUse" colorInterpolationFilters="sRGB">
                <feFlood floodOpacity="0" result="BackgroundImageFix" />
                <feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha" />
                <feMorphology radius="15" operator="dilate" in="SourceAlpha" result="effect1_dropShadow_1195_95" />
